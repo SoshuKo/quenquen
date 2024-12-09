@@ -4,41 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qeun-Qeun (コンコン)</title>
-    <style>
-        /* 基本スタイル */
-        #game-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .role-info, .turn-info {
-            margin: 10px;
-        }
-        .role-display img {
-            height: 100px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Qeun-Qeun (コンコン)</h1>
-        <div class="turn-info">
-            <p>ターン: <span id="turn-counter">1</span></p>
-            <p>親: <span id="current-parent">CPU</span></p>
-            <p>子: <span id="current-child">プレイヤー</span></p>
-        </div>
-        <div class="role-display">
-            <h2>役の表示</h2>
-            <p>CPUの役: <img id="cpu-role-img" src="" alt="CPUの役"></p>
-            <p>プレイヤーの役: <img id="player-role-img" src="" alt="プレイヤーの役"></p>
-        </div>
-        <div class="choices">
-            <h3>プレイヤーの選択</h3>
-            <button onclick="playTurn('Ye')">Ye</button>
-            <button onclick="playTurn('Ch’e')">Ch’e</button>
-            <button onclick="playTurn('Nge')">Nge</button>
-            <button onclick="playTurn('Kiún')">Kiún</button>
+        <header>
+            <h1>Qeun-Qeun (コンコン)</h1>
+            <button id="toggle-audio">音声オフ</button>
+        </header>
+        <div class="game-info">
+            <div class="side cpu">
+                <h2>CPU (親/子)</h2>
+                <img id="cpu-role-img" src="" alt="CPUの役">
+                <p>次に出せる役: <span id="cpu-options"></span></p>
+            </div>
+            <div class="center">
+                <p>ターン: <span id="turn-counter">1</span></p>
+                <p>親: <span id="current-parent">CPU</span></p>
+                <p>子: <span id="current-child">プレイヤー</span></p>
+                <button id="confirm-selection">確定</button>
+            </div>
+            <div class="side player">
+                <h2>プレイヤー (親/子)</h2>
+                <img id="player-role-img" src="" alt="プレイヤーの役">
+                <p>次に出せる役: <span id="player-options"></span></p>
+                <div id="player-choices">
+                    <button data-role="Ye">Ye</button>
+                    <button data-role="Ch’e">Ch’e</button>
+                    <button data-role="Nge">Nge</button>
+                    <button data-role="Kiún" disabled>Kiún</button>
+                </div>
+            </div>
         </div>
         <div id="center-info"></div>
     </div>
