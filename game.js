@@ -79,15 +79,31 @@ function updateDisplay() {
 
 // 勝敗を判定
 function checkResult() {
+    let resultMessage = '';
+    
     if (playerChoice === cpuChoice) {
-        messageDisplay.textContent += ' 勝負は引き分けです。';
+        resultMessage = '勝負は引き分けです。';
     } else if ((playerChoice === 'kiun' && cpuChoice !== 'kiun') || 
                (playerChoice === 'ye' && cpuChoice === 'che') || 
                (playerChoice === 'che' && cpuChoice === 'nge') || 
                (playerChoice === 'nge' && cpuChoice === 'ye')) {
-        messageDisplay.textContent += ' プレイヤーの勝ち！';
+        resultMessage = 'プレイヤーの勝ち！';
     } else {
-        messageDisplay.textContent += ' CPUの勝ち！';
+        resultMessage = 'CPUの勝ち！';
     }
+    
+    // 役に対応した音声の再生
+    if (soundOn) {
+        sounds[playerChoice].play();
+        sounds[cpuChoice].play();
+    }
+    
+    messageDisplay.textContent += ` ${resultMessage}`;
+    
+    // 勝負後にターンをリセット
+    turns = 1;
+    turnsDisplay.textContent = turns;
+    
+    // 親と子の役を表示
     currentParentDisplay.textContent = turns % 2 === 1 ? 'プレイヤー' : 'CPU';
 }
