@@ -88,7 +88,7 @@ function playTurn(childChoice) {
     // 勝敗判定
     let resultMessage = '';
     if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
-        resultMessage = '親のKiúnに対し、子がKiún以外を出したため子の負け！';
+        resultMessage = '子のKiúnに対し、親がKiúnを出さなかったため親の負け！';
     } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
         resultMessage = '子のKiúnに対し、親がKiúnを出さなかったため親の負け！';
     } else if (parentChoice === childChoice && childChoice === 'Kiún') {
