@@ -40,8 +40,9 @@ body {
     margin: 20px 0;
 }
 
-.player-side, .cpu-side {
+.cpu-side, .player-side {
     width: 40%;
+    text-align: center;
 }
 
 #message {
@@ -52,4 +53,18 @@ body {
 
 .sound-toggle {
     margin-top: 20px;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#cpu-hand, #player-hand {
+    margin-top: 20px;
+}
+
+#cpu-hand img, #player-hand img {
+    width: 100px;
+    height: 100px;
 }
