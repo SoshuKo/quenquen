@@ -40,7 +40,7 @@ body {
     margin: 20px 0;
 }
 
-.cpu-side, .player-side {
+.player-side, .cpu-side {
     width: 40%;
     text-align: center;
 }
@@ -55,16 +55,7 @@ body {
     margin-top: 20px;
 }
 
-h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-#cpu-hand, #player-hand {
-    margin-top: 20px;
-}
-
-#cpu-hand img, #player-hand img {
-    width: 100px;
-    height: 100px;
+img {
+    width: 100px; /* 画像サイズ調整 */
+    height: auto;
 }
