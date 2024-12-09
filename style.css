@@ -75,3 +75,8 @@ img {
     background-color: #CCC;
     cursor: not-allowed;
 }
+
+#player-choices button.selected {
+    background-color: #F09000;
+    color: white;
+}
