@@ -8,24 +8,41 @@ body {
 }
 
 #game-container {
-    margin: 20px auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     padding: 20px;
-    max-width: 500px;
+}
+
+#cpu-side, #player-side {
+    width: 30%;
+    text-align: center;
     border: 2px solid #F09000;
     border-radius: 10px;
+    padding: 10px;
     background-color: #fff;
 }
 
-h1 {
+#center-info {
+    width: 30%;
+    text-align: center;
+    background-color: #FDF5E6;
+    border: 2px solid #F09000;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+h2 {
     color: #F09000;
 }
 
-#status {
-    margin: 20px;
-    font-size: 1.2em;
+img {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
 }
 
-#choices button {
+button {
     margin: 10px;
     padding: 10px 20px;
     font-size: 1em;
@@ -36,6 +53,7 @@ h1 {
     cursor: pointer;
 }
 
-#choices button:hover {
+button:hover {
     background-color: #d07800;
 }
+
