@@ -19,23 +19,22 @@ function updateRoleImages() {
     document.getElementById('player-role-img').src = roleImages.Player[lastChildChoice] || '';
 }
 
-function updateNextOptions() {
-    let cpuOptions = roles.filter(role => role !== lastParentChoice).join(', ');
-    let playerOptions = roles.filter(role => role !== lastChildChoice).join(', ');
-
-    document.getElementById('cpu-options').innerText = cpuOptions;
-    document.getElementById('player-options').innerText = playerOptions;
-}
-
 function updateTurnInfo() {
     document.getElementById('turn-counter').innerText = turnCounter;
-    document.getElementById('current-parent').innerText = isParentTurn ? 'CPU (親)' : 'プレイヤー (親)';
-    document.getElementById('current-child').innerText = isParentTurn ? 'プレイヤー (子)' : 'CPU (子)';
+
+    // 親と子の状態を表示
+    if (isParentTurn) {
+        document.getElementById('current-parent').innerText = 'CPU (親)';
+        document.getElementById('current-child').innerText = 'プレイヤー (子)';
+    } else {
+        document.getElementById('current-parent').innerText = 'プレイヤー (親)';
+        document.getElementById('current-child').innerText = 'CPU (子)';
+    }
 }
 
 function endGame(message) {
     document.getElementById('center-info').innerHTML += `<p>${message}</p>`;
-    document.getElementById('choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
+    document.querySelector('.choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
 }
 
 function playTurn(childChoice) {
@@ -50,9 +49,6 @@ function playTurn(childChoice) {
     }
 
     let parentChoice = getRandomChoice(lastParentChoice);
-    if (isParentTurn && parentChoice === lastParentChoice) {
-        parentChoice = getRandomChoice(lastParentChoice);
-    }
 
     // 現在の役を保存
     lastParentChoice = parentChoice;
@@ -83,6 +79,5 @@ function playTurn(childChoice) {
 
     // UIの更新
     updateRoleImages();
-    updateNextOptions();
     updateTurnInfo();
 }
