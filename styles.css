@@ -1,61 +1,82 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #F09000;
-    color: white;
+    background-color: #FFF4E5;
+    color: #333;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    text-align: center;
 }
 
-.container {
-    text-align: center;
-    width: 80%;
+#game-container {
+    width: 90%;
+    max-width: 1200px;
+    border: 2px solid #F09000;
+    border-radius: 10px;
+    padding: 20px;
+    background: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    background-color: #F09000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #D08000;
 }
 
 .game-info {
-    margin-bottom: 20px;
-}
-
-.role-selection button, #confirmBtn, #soundToggle {
-    padding: 10px 20px;
-    background-color: #333;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin: 10px;
-    font-size: 1.2em;
-}
-
-.role-btn {
-    font-size: 1.5em;
-    margin: 10px;
-}
-
-.game-display {
     display: flex;
     justify-content: space-between;
-    margin: 20px 0;
-}
-
-.player-side, .cpu-side {
-    width: 40%;
-    text-align: center;
-}
-
-#message {
     margin-top: 20px;
-    font-size: 1.2em;
-    color: #ffcc00;
 }
 
-.sound-toggle {
-    margin-top: 20px;
+.side {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.center {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid #F09000;
+    border-right: 1px solid #F09000;
+    padding: 10px;
 }
 
 img {
-    width: 100px; /* 画像サイズ調整 */
+    width: 120px;
     height: auto;
+    margin: 10px;
+}
+
+#player-choices button[disabled] {
+    background-color: #CCC;
+    cursor: not-allowed;
+}
+
+#player-choices button.selected {
+    background-color: #F09000;
+    color: white;
 }
