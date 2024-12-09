@@ -92,7 +92,16 @@ function playTurn(childChoice) {
     } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
         resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため子の負け！';
     } else if (parentChoice === childChoice && childChoice === 'Kiún') {
-        resultMessage = '親と子が同じ役でKiúnを出したため勝負は決まりません！';
+        resultMessage = '親と子が同じ役でKiúnを出したため勝負は決まりません！ゲームは続行されます。';
+        // ゲーム続行の場合、ターン交代せず次のターンへ
+        turnCounter++;
+        isParentTurn = !isParentTurn;
+        isFirstTurn = false;
+        updateRoleImages();
+        playSound(childChoice); // 役の音声を再生
+        updateNextOptions();
+        updateTurnInfo();
+        return;
     } else if (parentChoice === childChoice) {
         resultMessage = '親と子が同じ役を出したため子の負け！';
     }
