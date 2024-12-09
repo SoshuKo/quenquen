@@ -29,8 +29,8 @@ function updateNextOptions() {
 
 function updateTurnInfo() {
     document.getElementById('turn-counter').innerText = turnCounter;
-    document.getElementById('current-parent').innerText = isParentTurn ? 'CPU' : 'プレイヤー';
-    document.getElementById('current-child').innerText = isParentTurn ? 'プレイヤー' : 'CPU';
+    document.getElementById('current-parent').innerText = isParentTurn ? 'CPU (親)' : 'プレイヤー (親)';
+    document.getElementById('current-child').innerText = isParentTurn ? 'プレイヤー (子)' : 'CPU (子)';
 }
 
 function endGame(message) {
@@ -60,7 +60,9 @@ function playTurn(childChoice) {
 
     // 勝敗判定
     let resultMessage = '';
-    if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
+    if (parentChoice === 'Kiún' && childChoice === 'Kiún') {
+        resultMessage = ''; // Kiún同士の場合は勝敗なし
+    } else if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
         resultMessage = '子のKiúnに対し、親がKiún以外を出したため親の負け！';
     } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
         resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため子の負け！';
