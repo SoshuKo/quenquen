@@ -3,6 +3,7 @@ let lastChildChoice = null;  // プレイヤーの前回の役
 let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
 let isSoundOn = true;        // 音声のオン/オフフラグ
+let isFirstTurn = true;      // 初回ターンの判定
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
@@ -17,8 +18,14 @@ const soundFiles = {
 };
 
 function getRandomChoice(exclude) {
-    let choices = roles.filter(role => role !== exclude);
-    return choices[Math.floor(Math.random() * choices.length)];
+    // 初回ターンの時、CPUはKiúnを選ばない
+    if (isFirstTurn) {
+        let choices = roles.filter(role => role !== exclude && role !== 'Kiún');
+        return choices[Math.floor(Math.random() * choices.length)];
+    } else {
+        let choices = roles.filter(role => role !== exclude);
+        return choices[Math.floor(Math.random() * choices.length)];
+    }
 }
 
 function playSound(role) {
@@ -101,6 +108,7 @@ function playTurn(childChoice) {
     // 勝負が決まらない場合、ターン交代
     turnCounter++;
     isParentTurn = !isParentTurn;
+    isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
 
     // UIの更新
     updateRoleImages();
