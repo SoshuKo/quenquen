@@ -4,8 +4,8 @@ let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
 let isSoundOn = true;        // 音声のオン/オフフラグ
 let isFirstTurn = true;      // 初回ターンの判定
-let isKiúnUsedByParent = false; // CPU（親）がKiúnを出したかどうか
-let isKiúnUsedByChild = false;  // プレイヤー（子）がKiúnを出したかどうか
+let isKiúnUsed = false;      // Kiúnが出されたかどうかのフラグ
+let isCPUKiúnUsed = false;   // CPUがKiúnを出したかどうかのフラグ
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
@@ -20,14 +20,19 @@ const soundFiles = {
 };
 
 function getRandomChoice(exclude) {
+    let choices = roles.filter(role => role !== exclude);
+
     // 初回ターンの時、CPUはKiúnを選ばない
     if (isFirstTurn) {
-        let choices = roles.filter(role => role !== exclude && role !== 'Kiún');
-        return choices[Math.floor(Math.random() * choices.length)];
-    } else {
-        let choices = roles.filter(role => role !== exclude);
-        return choices[Math.floor(Math.random() * choices.length)];
+        choices = choices.filter(role => role !== 'Kiún');
     }
+
+    // CPUが既にKiúnを選んだ場合、Kiúnを選ばない
+    if (isCPUKiúnUsed) {
+        choices = choices.filter(role => role !== 'Kiún');
+    }
+
+    return choices[Math.floor(Math.random() * choices.length)];
 }
 
 function playSound(role) {
@@ -73,18 +78,10 @@ function playTurn(childChoice) {
         return;
     }
 
-    // プレイヤー（子）がKiúnを出せるかどうかのチェック
-    if (childChoice === 'Kiún' && isKiúnUsedByChild) {
-        alert('一試合でKiúnは1回しか出せません！（プレイヤー側）');
+    // Kiúnは一試合につき1回しか出せない制約
+    if (childChoice === 'Kiún' && isKiúnUsed) {
+        alert('一試合でKiúnは1回しか出せません！');
         return;
-    }
-
-    // CPU（親）がKiúnを出せるかどうかのチェック
-    if (childChoice !== 'Kiún' && !isKiúnUsedByParent) {
-        let parentChoice = getRandomChoice(lastParentChoice);
-        if (parentChoice === 'Kiún') {
-            isKiúnUsedByParent = true;
-        }
     }
 
     if (childChoice === lastChildChoice) {
@@ -93,13 +90,20 @@ function playTurn(childChoice) {
     }
 
     let parentChoice = getRandomChoice(lastParentChoice);
-    if (isParentTurn && parentChoice === lastParentChoice) {
-        parentChoice = getRandomChoice(lastParentChoice);
+
+    // CPUがKiúnを選んだ場合、フラグを立てる
+    if (parentChoice === 'Kiún') {
+        isCPUKiúnUsed = true;
     }
 
     // 現在の役を保存
     lastParentChoice = parentChoice;
     lastChildChoice = childChoice;
+
+    // プレイヤーがKiúnを出した場合、フラグを立てる
+    if (childChoice === 'Kiún') {
+        isKiúnUsed = true;
+    }
 
     // 勝敗判定
     let resultMessage = '';
