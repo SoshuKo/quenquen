@@ -1,58 +1,55 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #fff7e6;
-    color: #333;
+    background-color: #F09000;
+    color: white;
     margin: 0;
     padding: 0;
-}
-
-#game-container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-#cpu-side, #player-side {
-    width: 30%;
+.container {
     text-align: center;
-    border: 2px solid #F09000;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #fff;
+    width: 80%;
 }
 
-#center-info {
-    width: 30%;
-    text-align: center;
-    background-color: #FDF5E6;
-    border: 2px solid #F09000;
-    border-radius: 10px;
-    padding: 10px;
+.game-info {
+    margin-bottom: 20px;
 }
 
-h2 {
-    color: #F09000;
-}
-
-img {
-    width: 100px;
-    height: 100px;
-    margin: 10px;
-}
-
-button {
-    margin: 10px;
+.role-selection button, #confirmBtn, #soundToggle {
     padding: 10px 20px;
-    font-size: 1em;
+    background-color: #333;
     border: none;
-    border-radius: 5px;
-    background-color: #F09000;
-    color: #fff;
+    color: white;
     cursor: pointer;
+    margin: 10px;
+    font-size: 1.2em;
 }
 
-button:hover {
-    background-color: #d07800;
+.role-btn {
+    font-size: 1.5em;
+    margin: 10px;
+}
+
+.game-display {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.player-side, .cpu-side {
+    width: 40%;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #ffcc00;
+}
+
+.sound-toggle {
+    margin-top: 20px;
 }
