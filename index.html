@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qeun-Qeun (コンコン)</title>
-    <style>
-        /* 基本スタイル */
-        #game-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .role-info, .turn-info {
-            margin: 10px;
-        }
-        .role-display img {
-            height: 100px;
-        }
-    </style>
+    <title>Qeun-Qeun(コンコン)</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="game-container">
-        <h1>Qeun-Qeun (コンコン)</h1>
-        <div class="turn-info">
-            <p>ターン: <span id="turn-counter">1</span></p>
-            <p>親: <span id="current-parent">CPU</span></p>
-            <p>子: <span id="current-child">プレイヤー</span></p>
+    <div class="container">
+        <div class="game-info">
+            <p>ターン: <span id="turns">1</span></p>
+            <p>現在の親: <span id="currentParent">プレイヤー</span></p>
         </div>
-        <div class="role-display">
-            <h2>役の表示</h2>
-            <p>CPUの役: <img id="cpu-role-img" src="" alt="CPUの役"></p>
-            <p>プレイヤーの役: <img id="player-role-img" src="" alt="プレイヤーの役"></p>
+        
+        <div class="role-selection">
+            <h2>役を選んでください</h2>
+            <button class="role-btn" id="yeBtn">Ye</button>
+            <button class="role-btn" id="cheBtn">Ch’e</button>
+            <button class="role-btn" id="ngeBtn">Nge</button>
+            <button class="role-btn" id="kiunBtn">Kiún</button>
         </div>
-        <div class="choices">
-            <h3>プレイヤーの選択</h3>
-            <button onclick="playTurn('Ye')">Ye</button>
-            <button onclick="playTurn('Ch’e')">Ch’e</button>
-            <button onclick="playTurn('Nge')">Nge</button>
-            <button onclick="playTurn('Kiún')">Kiún</button>
+        
+        <div class="game-display">
+            <div class="player-side">
+                <h3>プレイヤー</h3>
+                <div id="player-hand"></div>
+            </div>
+            <div class="cpu-side">
+                <h3>CPU</h3>
+                <div id="cpu-hand"></div>
+            </div>
         </div>
-        <div id="center-info"></div>
+        
+        <button id="confirmBtn">確定</button>
+        <div id="message"></div>
+
+        <div class="sound-toggle">
+            <button id="soundToggle">音声オン/オフ</button>
+        </div>
     </div>
-    <script src="script.js"></script>
+    
+    <script src="game.js"></script>
 </body>
 </html>
