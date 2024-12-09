@@ -88,3 +88,4 @@ function prepareNextTurn() {
     // 初手のKiúnルール対応
     document.querySelector('#player-choices button[data-role="Kiún"]').disabled = (turnCounter === 1);
 }
+
