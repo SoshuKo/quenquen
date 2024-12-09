@@ -4,7 +4,7 @@ let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
 let isSoundOn = true;        // 音声のオン/オフフラグ
 let isFirstTurn = true;      // 初回ターンの判定
-let kiunUsed = false;        // Kiúnが既に使用されたかの判定
+let isKiúnUsed = false;      // Kiúnが出されたかどうかのフラグ
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
@@ -72,13 +72,12 @@ function playTurn(childChoice) {
         return;
     }
 
-    // Kiúnは一試合に一回しか出せない
-    if (kiunUsed && childChoice === 'Kiún') {
-        alert('Kiúnは一試合に一回しか出せません！');
+    // Kiúnは一試合につき1回しか出せない制約
+    if (childChoice === 'Kiún' && isKiúnUsed) {
+        alert('一試合でKiúnは1回しか出せません！');
         return;
     }
 
-    // 同じ役を続けて出せない
     if (childChoice === lastChildChoice) {
         alert('同じ役を続けて出すことはできません！');
         return;
@@ -92,6 +91,11 @@ function playTurn(childChoice) {
     // 現在の役を保存
     lastParentChoice = parentChoice;
     lastChildChoice = childChoice;
+
+    // Kiúnが出された場合はフラグを立てる
+    if (childChoice === 'Kiún') {
+        isKiúnUsed = true;
+    }
 
     // 勝敗判定
     let resultMessage = '';
@@ -122,20 +126,10 @@ function playTurn(childChoice) {
         return;
     }
 
-    // Kiúnを一度使った場合はフラグを立てる
-    if (childChoice === 'Kiún') {
-        kiunUsed = true;
-    }
-
     // 勝負が決まらない場合、ターン交代
     turnCounter++;
     isParentTurn = !isParentTurn;
     isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
-
-    // ターンが1に戻った場合、kiunUsedフラグをリセット
-    if (turnCounter === 1) {
-        kiunUsed = false;
-    }
 
     // UIの更新
     updateRoleImages();
