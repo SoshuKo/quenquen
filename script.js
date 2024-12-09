@@ -132,6 +132,11 @@ function playTurn(childChoice) {
     isParentTurn = !isParentTurn;
     isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
 
+    // ターンが1に戻った場合、kiunUsedフラグをリセット
+    if (turnCounter === 1) {
+        kiunUsed = false;
+    }
+
     // UIの更新
     updateRoleImages();
     playSound(childChoice); // 役の音声を再生
