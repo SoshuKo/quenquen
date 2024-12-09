@@ -88,9 +88,9 @@ function playTurn(childChoice) {
     // 勝敗判定
     let resultMessage = '';
     if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
-        resultMessage = '子のKiúnに対し、親がKiúnを出さなかったため親の負け！';
-    } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
         resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため親の負け！';
+    } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
+        resultMessage = '子のKiúnに対し、親がKiúnを出さなかったため親の負け！';
     } else if (parentChoice === childChoice && childChoice === 'Kiún') {
         resultMessage = '親と子が同じ役であるKiúnを出したため勝負は決まりません！ゲームは続行されます。';
         // ゲーム続行の場合、ターン交代せず次のターンへ
