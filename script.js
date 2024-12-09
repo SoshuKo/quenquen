@@ -13,6 +13,9 @@ const roleAudio = {
 
 document.getElementById('toggle-audio').addEventListener('click', toggleAudio);
 document.getElementById('confirm-selection').addEventListener('click', confirmSelection);
+document.querySelectorAll('#player-choices button').forEach(button => {
+    button.addEventListener('click', () => selectRole(button));
+});
 
 function toggleAudio() {
     audioEnabled = !audioEnabled;
@@ -26,14 +29,23 @@ function playAudio(role) {
     }
 }
 
+function selectRole(button) {
+    const playerChoice = button.dataset.role;
+
+    // すでに選択したボタンがあれば選択解除
+    document.querySelectorAll('#player-choices button').forEach(b => b.classList.remove('selected'));
+
+    button.classList.add('selected');
+    lastChildChoice = playerChoice;
+
+    // 初手でKiúnを出せないルール
+    document.getElementById('kiun-btn').disabled = (turnCounter === 1 && playerChoice === 'Kiún');
+}
+
 function confirmSelection() {
-    const playerChoice = document.querySelector('#player-choices button.selected')?.dataset.role;
+    const playerChoice = lastChildChoice;
     if (!playerChoice) {
         alert('役を選択してください！');
-        return;
-    }
-    if (turnCounter === 1 && playerChoice === 'Kiún') {
-        alert('初手ではKiúnを出せません！');
         return;
     }
 
@@ -64,8 +76,8 @@ function chooseCpuRole() {
 }
 
 function updateGameDisplay(playerChoice, cpuChoice) {
-    document.getElementById('player-role-img').src = `images/${playerChoice}.png`;
-    document.getElementById('cpu-role-img').src = `images/${cpuChoice}.png`;
+    document.getElementById('player-role-img').src = `images/player-${playerChoice.toLowerCase()}.png`;
+    document.getElementById('cpu-role-img').src = `images/cpu-${cpuChoice.toLowerCase()}.png`;
 }
 
 function checkGameOutcome(playerChoice, cpuChoice) {
@@ -88,4 +100,3 @@ function prepareNextTurn() {
     // 初手のKiúnルール対応
     document.querySelector('#player-choices button[data-role="Kiún"]').disabled = (turnCounter === 1);
 }
-
