@@ -49,6 +49,8 @@ confirmBtn.addEventListener('click', () => {
     playerChoice = null;
     playerHand.innerHTML = '';
     cpuHand.innerHTML = '';
+    // 役選択をリセット
+    resetRoleButtons();
 });
 
 // 音声オンオフボタン
@@ -74,36 +76,35 @@ function getCpuChoice() {
 // 表示を更新
 function updateDisplay() {
     cpuHand.innerHTML = `<img src="${roleImages[cpuChoice].cpu}" alt="${cpuChoice}">`;
+    // 親、子の役を画像と音声で表示
+    if (soundOn) {
+        sounds[playerChoice].play();
+        setTimeout(() => {
+            sounds[cpuChoice].play();
+        }, 1000); // CPUの役は少し遅れて再生
+    }
     messageDisplay.textContent = `親: ${playerChoice}, 子: ${cpuChoice}`;
 }
 
 // 勝敗を判定
 function checkResult() {
-    let resultMessage = '';
-    
     if (playerChoice === cpuChoice) {
-        resultMessage = '勝負は引き分けです。';
+        messageDisplay.textContent += ' 勝負は引き分けです。';
     } else if ((playerChoice === 'kiun' && cpuChoice !== 'kiun') || 
                (playerChoice === 'ye' && cpuChoice === 'che') || 
                (playerChoice === 'che' && cpuChoice === 'nge') || 
                (playerChoice === 'nge' && cpuChoice === 'ye')) {
-        resultMessage = 'プレイヤーの勝ち！';
+        messageDisplay.textContent += ' プレイヤーの勝ち！';
     } else {
-        resultMessage = 'CPUの勝ち！';
+        messageDisplay.textContent += ' CPUの勝ち！';
     }
-    
-    // 役に対応した音声の再生
-    if (soundOn) {
-        sounds[playerChoice].play();
-        sounds[cpuChoice].play();
-    }
-    
-    messageDisplay.textContent += ` ${resultMessage}`;
-    
-    // 勝負後にターンをリセット
-    turns = 1;
-    turnsDisplay.textContent = turns;
-    
-    // 親と子の役を表示
     currentParentDisplay.textContent = turns % 2 === 1 ? 'プレイヤー' : 'CPU';
+}
+
+// 役選択ボタンをリセット
+function resetRoleButtons() {
+    yeBtn.disabled = false;
+    cheBtn.disabled = false;
+    ngeBtn.disabled = false;
+    kiunBtn.disabled = false;
 }
