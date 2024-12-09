@@ -1,83 +1,90 @@
-let lastParentChoice = null; // CPUの前回の役
-let lastChildChoice = null;  // プレイヤーの前回の役
-let isParentTurn = true;     // 現在のターンが親のターンかどうか
-let turnCounter = 1;         // 現在のターン数
-
+let lastParentChoice = null;
+let lastChildChoice = null;
+let isParentTurn = true;
+let turnCounter = 1;
+let audioEnabled = true;
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
-const roleImages = {
-    CPU: { 'Ye': 'cpu-ye.png', 'Ch’e': 'cpu-che.png', 'Nge': 'cpu-nge.png', 'Kiún': 'cpu-kiun.png' },
-    Player: { 'Ye': 'player-ye.png', 'Ch’e': 'player-che.png', 'Nge': 'player-nge.png', 'Kiún': 'player-kiun.png' }
+const roleAudio = {
+    'Ye': 'audio/ye-sound.m4a',
+    'Ch’e': 'audio/che-sound.m4a',
+    'Nge': 'audio/nge-sound.m4a',
+    'Kiún': 'audio/kiun-sound.m4a'
 };
 
-function getRandomChoice(exclude) {
-    let choices = roles.filter(role => role !== exclude);
-    return choices[Math.floor(Math.random() * choices.length)];
+document.getElementById('toggle-audio').addEventListener('click', toggleAudio);
+document.getElementById('confirm-selection').addEventListener('click', confirmSelection);
+
+function toggleAudio() {
+    audioEnabled = !audioEnabled;
+    document.getElementById('toggle-audio').innerText = audioEnabled ? '音声オフ' : '音声オン';
 }
 
-function updateRoleImages() {
-    document.getElementById('cpu-role-img').src = roleImages.CPU[lastParentChoice] || '';
-    document.getElementById('player-role-img').src = roleImages.Player[lastChildChoice] || '';
-}
-
-function updateTurnInfo() {
-    document.getElementById('turn-counter').innerText = turnCounter;
-
-    // 親と子の状態を表示
-    if (isParentTurn) {
-        document.getElementById('current-parent').innerText = 'CPU (親)';
-        document.getElementById('current-child').innerText = 'プレイヤー (子)';
-    } else {
-        document.getElementById('current-parent').innerText = 'プレイヤー (親)';
-        document.getElementById('current-child').innerText = 'CPU (子)';
+function playAudio(role) {
+    if (audioEnabled && roleAudio[role]) {
+        const audio = new Audio(roleAudio[role]);
+        audio.play();
     }
 }
 
-function endGame(message) {
-    document.getElementById('center-info').innerHTML += `<p>${message}</p>`;
-    document.querySelector('.choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
-}
-
-function playTurn(childChoice) {
-    if (!roles.includes(childChoice)) {
-        alert('無効な選択です。');
+function confirmSelection() {
+    const playerChoice = document.querySelector('#player-choices button.selected')?.dataset.role;
+    if (!playerChoice) {
+        alert('役を選択してください！');
+        return;
+    }
+    if (turnCounter === 1 && playerChoice === 'Kiún') {
+        alert('初手ではKiúnを出せません！');
         return;
     }
 
-    if (childChoice === lastChildChoice) {
-        alert('同じ役を続けて出すことはできません！');
-        return;
-    }
+    // プレイヤーの選択を反映
+    lastChildChoice = playerChoice;
 
-    let parentChoice = getRandomChoice(lastParentChoice);
+    // CPUの選択
+    const cpuChoice = chooseCpuRole();
+    lastParentChoice = cpuChoice;
 
-    // 現在の役を保存
-    lastParentChoice = parentChoice;
-    lastChildChoice = childChoice;
+    // 音声再生
+    playAudio(playerChoice);
+    playAudio(cpuChoice);
+
+    // 表示更新
+    updateGameDisplay(playerChoice, cpuChoice);
 
     // 勝敗判定
-    let resultMessage = '';
-    if (parentChoice === 'Kiún' && childChoice === 'Kiún') {
-        resultMessage = ''; // Kiún同士の場合は勝敗なし
-    } else if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
-        resultMessage = '子のKiúnに対し、親がKiún以外を出したため親の負け！';
-    } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
-        resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため子の負け！';
-    } else if (parentChoice === childChoice) {
-        resultMessage = '親と子が同じ役を出したため子の負け！';
-    }
+    checkGameOutcome(playerChoice, cpuChoice);
 
-    // 勝敗が決した場合
-    if (resultMessage) {
-        updateRoleImages();
-        endGame(resultMessage);
-        return;
-    }
+    // 次のターン準備
+    prepareNextTurn();
+}
 
-    // 勝負が決まらない場合、ターン交代
-    turnCounter++;
+function chooseCpuRole() {
+    const availableRoles = roles.filter(role => role !== lastParentChoice && !(turnCounter === 1 && role === 'Kiún'));
+    return availableRoles[Math.floor(Math.random() * availableRoles.length)];
+}
+
+function updateGameDisplay(playerChoice, cpuChoice) {
+    document.getElementById('player-role-img').src = `images/${playerChoice}.png`;
+    document.getElementById('cpu-role-img').src = `images/${cpuChoice}.png`;
+}
+
+function checkGameOutcome(playerChoice, cpuChoice) {
+    if (playerChoice === 'Kiún' && cpuChoice !== 'Kiún') {
+        alert('プレイヤーの勝利！');
+    } else if (cpuChoice === 'Kiún' && playerChoice !== 'Kiún') {
+        alert('CPUの勝利！');
+    } else if (playerChoice !== cpuChoice) {
+        alert('プレイヤーの負け！');
+    }
+}
+
+function prepareNextTurn() {
     isParentTurn = !isParentTurn;
+    turnCounter++;
+    document.getElementById('turn-counter').innerText = turnCounter;
+    document.getElementById('current-parent').innerText = isParentTurn ? 'プレイヤー' : 'CPU';
+    document.getElementById('current-child').innerText = isParentTurn ? 'CPU' : 'プレイヤー';
 
-    // UIの更新
-    updateRoleImages();
-    updateTurnInfo();
+    // 初手のKiúnルール対応
+    document.querySelector('#player-choices button[data-role="Kiún"]').disabled = (turnCounter === 1);
 }
