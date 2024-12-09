@@ -1,111 +1,58 @@
-/* ページ全体のスタイル */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    text-align: center;
+    background-color: #fff7e6;
     color: #333;
     margin: 0;
     padding: 0;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-}
-
-/* ゲームエリアのスタイル */
-.game-area {
+#game-container {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    width: 80%;
-    margin-bottom: 20px;
+    padding: 20px;
 }
 
-.player, .cpu {
-    width: 45%;
+#cpu-side, #player-side {
+    width: 30%;
     text-align: center;
+    border: 2px solid #F09000;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
 }
 
-.role-image {
-    width: 150px;
-    height: 150px;
-    margin-top: 20px;
+#center-info {
+    width: 30%;
+    text-align: center;
+    background-color: #FDF5E6;
+    border: 2px solid #F09000;
+    border-radius: 10px;
+    padding: 10px;
 }
 
-#turn-counter {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 10px;
+h2 {
+    color: #F09000;
 }
 
-/* 役の選択部分 */
-#choices {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
+img {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
 }
 
 button {
-    font-size: 1.2em;
-    padding: 10px 20px;
     margin: 10px;
-    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 1em;
     border: none;
-    background-color: #f09000;
-    color: white;
     border-radius: 5px;
+    background-color: #F09000;
+    color: #fff;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: #d77e00;
-}
-
-/* 役の音声オプション */
-#sound-toggle {
-    font-size: 1.2em;
-    margin-top: 20px;
-    cursor: pointer;
-    background-color: #f09000;
-    padding: 10px 20px;
-    color: white;
-    border-radius: 5px;
-}
-
-#sound-toggle:hover {
-    background-color: #d77e00;
-}
-
-/* 勝敗メッセージエリア */
-#center-info {
-    font-size: 1.5em;
-    margin-top: 20px;
-}
-
-/* ルールの表示 */
-.rules-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* 背景色 */
-    color: white;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.rules-container h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.rules-container p {
-    font-size: 1em;
-    line-height: 1.5;
-    margin-bottom: 10px;
+    background-color: #d07800;
 }
