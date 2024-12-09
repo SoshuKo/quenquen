@@ -2,16 +2,30 @@ let lastParentChoice = null; // CPUの前回の役
 let lastChildChoice = null;  // プレイヤーの前回の役
 let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
+let isSoundOn = true;        // 音声のオン/オフフラグ
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
-    CPU: { 'Ye': 'cpu-ye.png', 'Ch’e': 'cpu-che.png', 'Nge': 'cpu-nge.png', 'Kiún': 'cpu-kiun.png' },
-    Player: { 'Ye': 'player-ye.png', 'Ch’e': 'player-che.png', 'Nge': 'player-nge.png', 'Kiún': 'player-kiun.png' }
+    CPU: { 'Ye': 'images/cpu-ye.png', 'Ch’e': 'images/cpu-che.png', 'Nge': 'images/cpu-nge.png', 'Kiún': 'images/cpu-kiun.png' },
+    Player: { 'Ye': 'images/player-ye.png', 'Ch’e': 'images/player-che.png', 'Nge': 'images/player-nge.png', 'Kiún': 'images/player-kiun.png' }
+};
+const soundFiles = {
+    Ye: 'audio/ye-sound.mp3',
+    'Ch’e': 'audio/che-sound.mp3',
+    Nge: 'audio/nge-sound.mp3',
+    Kiún: 'audio/kiun-sound.mp3'
 };
 
 function getRandomChoice(exclude) {
     let choices = roles.filter(role => role !== exclude);
     return choices[Math.floor(Math.random() * choices.length)];
+}
+
+function playSound(role) {
+    if (isSoundOn) {
+        let audio = new Audio(soundFiles[role]);
+        audio.play();
+    }
 }
 
 function updateRoleImages() {
@@ -29,8 +43,8 @@ function updateNextOptions() {
 
 function updateTurnInfo() {
     document.getElementById('turn-counter').innerText = turnCounter;
-    document.getElementById('current-parent').innerText = isParentTurn ? 'CPU' : 'プレイヤー';
-    document.getElementById('current-child').innerText = isParentTurn ? 'プレイヤー' : 'CPU';
+    document.getElementById('current-parent').innerText = isParentTurn ? 'CPU (親)' : 'プレイヤー (親)';
+    document.getElementById('current-child').innerText = isParentTurn ? 'プレイヤー (子)' : 'CPU (子)';
 }
 
 function endGame(message) {
@@ -41,6 +55,12 @@ function endGame(message) {
 function playTurn(childChoice) {
     if (!roles.includes(childChoice)) {
         alert('無効な選択です。');
+        return;
+    }
+
+    // 初手でKiúnを出せない制約
+    if (turnCounter === 1 && childChoice === 'Kiún') {
+        alert('初手でKiúnは出せません！');
         return;
     }
 
@@ -64,6 +84,8 @@ function playTurn(childChoice) {
         resultMessage = '子のKiúnに対し、親がKiún以外を出したため親の負け！';
     } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
         resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため子の負け！';
+    } else if (parentChoice === childChoice && childChoice === 'Kiún') {
+        resultMessage = '親と子が同じ役でKiúnを出したため勝負は決まりません！';
     } else if (parentChoice === childChoice) {
         resultMessage = '親と子が同じ役を出したため子の負け！';
     }
@@ -71,6 +93,7 @@ function playTurn(childChoice) {
     // 勝敗が決した場合
     if (resultMessage) {
         updateRoleImages();
+        playSound(childChoice); // 役の音声を再生
         endGame(resultMessage);
         return;
     }
@@ -81,6 +104,12 @@ function playTurn(childChoice) {
 
     // UIの更新
     updateRoleImages();
+    playSound(childChoice); // 役の音声を再生
     updateNextOptions();
     updateTurnInfo();
+}
+
+function toggleSound() {
+    isSoundOn = !isSoundOn;
+    document.getElementById('sound-toggle').innerText = isSoundOn ? '音声オフ' : '音声オン';
 }
