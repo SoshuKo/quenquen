@@ -4,6 +4,7 @@ let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
 let isSoundOn = true;        // 音声のオン/オフフラグ
 let isFirstTurn = true;      // 初回ターンの判定
+let isRulesVisible = false;  // ルール表示のオン/オフフラグ
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
@@ -17,8 +18,14 @@ const soundFiles = {
     Kiún: 'audio/kiun-sound.mp3'
 };
 
+// ルール表示の切り替え
+function toggleRules() {
+    isRulesVisible = !isRulesVisible;
+    document.getElementById('rules-container').style.display = isRulesVisible ? 'block' : 'none';
+}
+
+// 初回ターンの時、CPUはKiúnを選ばない
 function getRandomChoice(exclude) {
-    // 初回ターンの時、CPUはKiúnを選ばない
     if (isFirstTurn) {
         let choices = roles.filter(role => role !== exclude && role !== 'Kiún');
         return choices[Math.floor(Math.random() * choices.length)];
@@ -88,11 +95,11 @@ function playTurn(childChoice) {
     // 勝敗判定
     let resultMessage = '';
     if (childChoice === 'Kiún' && parentChoice !== 'Kiún') {
-        resultMessage = '子のKiúnに対し、親がKiún以外を出したため親の負け！';
+        resultMessage = 'Kiúnが一致しなかったため、親の負け！';
     } else if (parentChoice === 'Kiún' && childChoice !== 'Kiún') {
-        resultMessage = '親のKiúnに対し、子がKiúnを出さなかったため子の負け！';
+        resultMessage = 'Kiúnが一致しなかったため、親の負け！';
     } else if (parentChoice === childChoice && childChoice === 'Kiún') {
-        resultMessage = '親と子が同じ役でKiúnを出したため勝負は決まりません！ゲームは続行されます。';
+        resultMessage = 'Kiúnが一致したためゲームは続行されます。';
         // ゲーム続行の場合、ターン交代せず次のターンへ
         turnCounter++;
         isParentTurn = !isParentTurn;
@@ -130,3 +137,6 @@ function toggleSound() {
     isSoundOn = !isSoundOn;
     document.getElementById('sound-toggle').innerText = isSoundOn ? '音声オフ' : '音声オン';
 }
+
+// ルールボタンの追加
+document.getElementById('rule-button').addEventListener('click', toggleRules);
