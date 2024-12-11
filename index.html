@@ -4,58 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qeun-Qeun</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="container">
-        <header>
-            <h1>Qeun-Qeun ゲーム</h1>
-        </header>
-        <main>
-            <section id="game-info">
-                <p>ターン数: <span id="turn-counter">1</span></p>
-                <p>現在の親: <span id="current-parent">CPU (親)</span></p>
-                <p>現在の子: <span id="current-child">プレイヤー (子)</span></p>
-            </section>
-
-            <section id="roles">
-                <div id="cpu-area">
-                    <h2>CPU</h2>
-                    <img id="cpu-role-img" src="" alt="CPUの役">
-                    <p>次に選べる役: <span id="cpu-options">-</span></p>
-                </div>
-
-                <div id="center-info">
-                    <p>出した役を確認してください</p>
-                </div>
-
-                <div id="player-area">
-                    <h2>プレイヤー</h2>
-                    <img id="player-role-img" src="" alt="プレイヤーの役">
-                    <p>次に選べる役: <span id="player-options">-</span></p>
-                </div>
-            </section>
-
-            <section id="choices">
-                <h3>役を選択:</h3>
+    <div id="game-container">
+        <div id="cpu-side">
+            <h2>CPU <span id="current-parent">(親)</span>/<span id="current-child">(子)</span></h2>
+            <div id="cpu-role"><img id="cpu-role-img" src="" alt="CPUの役"></div>
+            <p id="cpu-next-roles">次に出せる役: <span id="cpu-options"></span></p>
+        </div>
+        
+        <div id="center-info">
+            <h1>Qeun-Qeun</h1>
+            <p>現在のターン: <span id="turn-counter">1</span></p>
+            <p>現在の親: <span id="current-parent">CPU (親)</span></p>
+            <p>現在の子: <span id="current-child">プレイヤー (子)</span></p>
+            <button id="sound-toggle" onclick="toggleSound()">音声オフ</button>
+        </div>
+        
+        <div id="player-side">
+            <h2>プレイヤー <span id="current-parent">(親)</span>/<span id="current-child">(子)</span></h2>
+            <div id="player-role"><img id="player-role-img" src="" alt="プレイヤーの役"></div>
+            <p id="player-next-roles">次に出せる役: <span id="player-options"></span></p>
+            <div id="choices">
                 <button onclick="playTurn('Ye')">Ye</button>
                 <button onclick="playTurn('Ch’e')">Ch’e</button>
                 <button onclick="playTurn('Nge')">Nge</button>
                 <button onclick="playTurn('Kiún')">Kiún</button>
-                <button onclick="playTurn('Fre')">Fre</button>
-            </section>
-        </main>
-
-        <aside id="controls">
-            <button id="sound-toggle" onclick="toggleSound()">音声オフ</button>
-            <button id="rule-toggle" onclick="toggle123Rule()">123ルールオフ</button>
-        </aside>
-
-        <footer>
-            <p>© 2024 Qeun-Qeun ゲーム</p>
-        </footer>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
-
