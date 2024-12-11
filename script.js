@@ -2,7 +2,7 @@ let lastParentChoice = null; // CPUの前回の役
 let lastChildChoice = null;  // プレイヤーの前回の役
 let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
-let isSoundOn = true;        // 音声のオン/オフフラグ
+let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
 
@@ -135,6 +135,7 @@ function playTurn(childChoice) {
 
 function toggleSound() {
     isSoundOn = !isSoundOn;
+    localStorage.setItem('isSoundOn', isSoundOn); // 音声設定をローカルストレージに保存
     document.getElementById('sound-toggle').innerText = isSoundOn ? '音声オフ' : '音声オン';
 }
 
