@@ -47,6 +47,17 @@ function updateRoleImages() {
     document.getElementById('player-role-img').src = roleImages.Player[lastChildChoice] || '';
 }
 
+function updateTurnInfo() {
+    document.getElementById('turn-counter').innerText = turnCounter;
+    if (isParentTurn) {
+        document.getElementById('current-parent').innerText = '現在の親: CPU (親)';
+        document.getElementById('current-child').innerText = '現在の子: プレイヤー (子)';
+    } else {
+        document.getElementById('current-parent').innerText = '現在の親: プレイヤー (親)';
+        document.getElementById('current-child').innerText = '現在の子: CPU (子)';
+    }
+}
+
 function updateNextOptions() {
     let cpuOptions = roles.filter(role => role !== lastParentChoice).join(', ');
     let playerOptions = roles.filter(role => role !== lastChildChoice).join(', ');
@@ -121,16 +132,16 @@ function playTurn(childChoice) {
         return;
     }
 
-    // 勝負が決まらない場合、ターン交代
-    turnCounter++;
-    isParentTurn = !isParentTurn;
-    isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
+// 勝負が決まらない場合、ターン交代
+turnCounter++;
+isParentTurn = !isParentTurn; // 親と子を交代
+isFirstTurn = false;         // 初回ターンが終わったのでフラグを更新
 
-    // UIの更新
-    updateRoleImages();
-    playSound(childChoice); // 役の音声を再生
-    updateNextOptions();
-    updateTurnInfo();
+// UIの更新
+updateRoleImages();
+playSound(childChoice); // 役の音声を再生
+updateNextOptions();
+updateTurnInfo();
 }
 
 function toggleSound() {
