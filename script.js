@@ -5,6 +5,19 @@ let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
+let is123RuleOn = true; // 123ルールの有効/無効フラグ
+let canUseFre = false; // Freを選択できるかのフラグ
+let consecutiveRoles = []; // 連続した役を記録する配列
+
+const freImages = {
+    CPU: 'images/cpu-fre.png',
+    Player: 'images/player-fre.png'
+};
+const freSound = 'audio/fre-sound.mp3';
+roles.push('Fre'); // Freを役リストに追加
+roleImages.CPU['Fre'] = freImages.CPU;
+roleImages.Player['Fre'] = freImages.Player;
+soundFiles['Fre'] = freSound;
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
@@ -36,7 +49,7 @@ function getRandomChoice(exclude) {
 }
 
 function playSound(role) {
-    if (isSoundOn) {
+    if (isSoundOn && soundFiles[role]) {
         let audio = new Audio(soundFiles[role]);
         audio.play();
     }
@@ -49,7 +62,7 @@ function updateRoleImages() {
 
 function updateNextOptions() {
     let cpuOptions = roles.filter(role => role !== lastParentChoice).join(', ');
-    let playerOptions = roles.filter(role => role !== lastChildChoice).join(', ');
+    let playerOptions = roles.filter(role => role !== lastChildChoice && (role !== 'Fre' || canUseFre)).join(', ');
 
     document.getElementById('cpu-options').innerText = cpuOptions;
     document.getElementById('player-options').innerText = playerOptions;
@@ -82,6 +95,25 @@ function playTurn(childChoice) {
         alert('同じ役を続けて出すことはできません！');
         return;
     }
+    
+if (childChoice === 'Fre') {
+    if (!canUseFre) {
+        alert('現在Freを選択することはできません！');
+        return;
+    }
+    canUseFre = false; // Freを選択できる状態をリセット
+}
+
+    if (childChoice !== 'Fre') {
+    consecutiveRoles.push(childChoice);
+    if (consecutiveRoles.length > 2) {
+        consecutiveRoles.shift(); // 配列のサイズを2つに制限
+    }
+    // Ye→Ch’eまたはCh’e→Ngeの場合、次ターンでFreが使用可能に
+    if (is123RuleOn && (consecutiveRoles.join('→') === 'Ye→Ch’e' || consecutiveRoles.join('→') === 'Ch’e→Nge')) {
+        canUseFre = true;
+    }
+}
 
     let parentChoice = getRandomChoice(lastParentChoice);
     if (isParentTurn && parentChoice === lastParentChoice) {
@@ -111,6 +143,14 @@ function playTurn(childChoice) {
         resultMessage = '親と子が同じ役を出したため子の負け！';
     }
 
+    if (parentChoice === 'Fre' && childChoice === 'Fre') {
+        resultMessage = 'Fre同士の勝負のため親の勝ち！';
+    } else if (parentChoice === 'Fre' && childChoice !== 'Fre') {
+        resultMessage = 'FreとKiúnの勝負のため親の勝ち！';
+    } else if (childChoice === 'Fre' && ['Ye', 'Ch’e', 'Nge'].includes(parentChoice)) {
+        resultMessage = 'Freとその他の役の勝負のため引き分け！ゲームは続行します。';
+    }
+
     // 勝敗が決した場合
     if (resultMessage) {
         updateRoleImages();
@@ -129,6 +169,11 @@ function playTurn(childChoice) {
     playSound(childChoice); // 役の音声を再生
     updateNextOptions();
     updateTurnInfo();
+}
+
+function toggle123Rule() {
+    is123RuleOn = !is123RuleOn;
+    document.getElementById('toggle-123-rule').innerText = is123RuleOn ? '123ルール オフ' : '123ルール オン';
 }
 
 function toggleSound() {
