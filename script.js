@@ -5,7 +5,6 @@ let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
-let is123RuleOn = false;     // 123ルールのオン/オフ
 let prevPlayerChoices = [];  // プレイヤーの過去の選択履歴
 let prevCPUChoices = [];     // CPUの過去の選択履歴
 
@@ -21,12 +20,6 @@ const soundFiles = {
     Kiún: 'audio/kiun-sound.mp3',
     Fre: 'audio/fre-sound.mp3'
 };
-
-// 123ルールの切り替え
-function toggle123Rule() {
-    is123RuleOn = !is123RuleOn;
-    document.getElementById('123-rule-toggle').innerText = is123RuleOn ? '123ルール: オン' : '123ルール: オフ';
-}
 
 // ルール表示の切り替え
 function toggleRules() {
@@ -76,24 +69,34 @@ function endGame(message) {
     document.getElementById('choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
 }
 
+// プレイヤーがYe→Ch’eまたはCh’e→Ngeの順番で出した場合のみ、次ターンでFreボタンが有効
+function shouldEnableFreForPlayer() {
+    return (prevPlayerChoices.length >= 2 && ((prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') || 
+                                              (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge')));
+}
+
+// CPUがYe→Ch’eまたはCh’e→Ngeの順番で出した場合、次ターンでのみFreが選択肢に入る
+function shouldEnableFreForCPU() {
+    return (prevCPUChoices.length >= 2 && ((prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') || 
+                                            (prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge')));
+}
+
 function playTurn(childChoice) {
     if (!roles.includes(childChoice)) {
         alert('無効な選択です。');
         return;
     }
 
-    // 123ルールを適用
-    if (is123RuleOn) {
-        // Ye→Ch’e→Fre または Ch’e→Nge→Fre の連続が必要
-        if ((prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') || 
-            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') ||
-            (prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge') || 
-            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge')) {
-            if (childChoice !== 'Fre') {
-                alert('このターンではFreを選べます。');
-                return;
-            }
-        }
+    // プレイヤーがFreを選べるかどうかのチェック
+    if (childChoice === 'Fre' && !shouldEnableFreForPlayer()) {
+        alert('Freはこのターンでは選べません！');
+        return;
+    }
+
+    // CPUがFreを選べるかどうかのチェック
+    if (isParentTurn && childChoice === 'Fre' && !shouldEnableFreForCPU()) {
+        alert('CPUはFreを選べません！');
+        return;
     }
 
     // 初手でKiúnを出せない制約
@@ -175,7 +178,3 @@ function toggleSound() {
     localStorage.setItem('isSoundOn', isSoundOn); // 音声設定をローカルストレージに保存
     document.getElementById('sound-toggle').innerText = isSoundOn ? '音声オフ' : '音声オン';
 }
-
-// ルールボタンの追加
-document.getElementById('rule-button').addEventListener('click', toggleRules);
-document.getElementById('123-rule-toggle').addEventListener('click', toggle123Rule);
