@@ -84,8 +84,11 @@ function playTurn(childChoice) {
 
     // 123ルールを適用
     if (is123RuleOn) {
+        // Ye→Ch’e→Fre または Ch’e→Nge→Fre の連続が必要
         if ((prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') || 
-            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e')) {
+            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') ||
+            (prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge') || 
+            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge')) {
             if (childChoice !== 'Fre') {
                 alert('このターンではFreを選べます。');
                 return;
@@ -176,4 +179,3 @@ function toggleSound() {
 // ルールボタンの追加
 document.getElementById('rule-button').addEventListener('click', toggleRules);
 document.getElementById('123-rule-toggle').addEventListener('click', toggle123Rule);
-
