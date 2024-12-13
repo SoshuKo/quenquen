@@ -4,7 +4,6 @@ let isParentTurn = true;     // 現在のターンが親のターンかどうか
 let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
-let isRulesVisible = false;  // ルール表示のオン/オフフラグ
 let prevPlayerChoices = [];  // プレイヤーの過去の選択履歴
 let prevCPUChoices = [];     // CPUの過去の選択履歴
 
@@ -21,21 +20,10 @@ const soundFiles = {
     Fre: 'audio/fre-sound.mp3'
 };
 
-// ルール表示の切り替え
-function toggleRules() {
-    isRulesVisible = !isRulesVisible;
-    document.getElementById('rules-container').style.display = isRulesVisible ? 'block' : 'none';
-}
-
 // 初回ターンの時、CPUはKiúnを選ばない
 function getRandomChoice(exclude) {
-    if (isFirstTurn) {
-        let choices = roles.filter(role => role !== exclude && role !== 'Kiún' && role !== 'Fre'); // 初回はKiúnとFreを除外
-        return choices[Math.floor(Math.random() * choices.length)];
-    } else {
-        let choices = roles.filter(role => role !== exclude);
-        return choices[Math.floor(Math.random() * choices.length)];
-    }
+    let choices = roles.filter(role => role !== exclude && (role !== 'Kiún' || !isFirstTurn) && (role !== 'Fre' || !isFreAvailable()));
+    return choices[Math.floor(Math.random() * choices.length)];
 }
 
 function playSound(role) {
@@ -51,8 +39,8 @@ function updateRoleImages() {
 }
 
 function updateNextOptions() {
-    let cpuOptions = roles.filter(role => role !== lastParentChoice).join(', ');
-    let playerOptions = roles.filter(role => role !== lastChildChoice).join(', ');
+    let cpuOptions = roles.filter(role => role !== lastParentChoice && (role !== 'Fre' || !shouldEnableFreForCPU())).join(', ');
+    let playerOptions = roles.filter(role => role !== lastChildChoice && (role !== 'Fre' || !shouldEnableFreForPlayer())).join(', ');
 
     document.getElementById('cpu-options').innerText = cpuOptions;
     document.getElementById('player-options').innerText = playerOptions;
@@ -71,14 +59,16 @@ function endGame(message) {
 
 // プレイヤーがYe→Ch’eまたはCh’e→Ngeの順番で出した場合のみ、次ターンでFreボタンが有効
 function shouldEnableFreForPlayer() {
-    return (prevPlayerChoices.length >= 2 && ((prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') || 
-                                              (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge')));
+    if (prevPlayerChoices.length < 2) return false;
+    return (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') ||
+           (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge');
 }
 
 // CPUがYe→Ch’eまたはCh’e→Ngeの順番で出した場合、次ターンでのみFreが選択肢に入る
 function shouldEnableFreForCPU() {
-    return (prevCPUChoices.length >= 2 && ((prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') || 
-                                            (prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge')));
+    if (prevCPUChoices.length < 2) return false;
+    return (prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') ||
+           (prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge');
 }
 
 function playTurn(childChoice) {
