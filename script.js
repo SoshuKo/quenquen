@@ -5,18 +5,28 @@ let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
+let is123RuleOn = false;     // 123ルールのオン/オフ
+let prevPlayerChoices = [];  // プレイヤーの過去の選択履歴
+let prevCPUChoices = [];     // CPUの過去の選択履歴
 
-const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
+const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún', 'Fre']; // 'Fre'を役に追加
 const roleImages = {
-    CPU: { 'Ye': 'images/cpu-ye.png', 'Ch’e': 'images/cpu-che.png', 'Nge': 'images/cpu-nge.png', 'Kiún': 'images/cpu-kiun.png' },
-    Player: { 'Ye': 'images/player-ye.png', 'Ch’e': 'images/player-che.png', 'Nge': 'images/player-nge.png', 'Kiún': 'images/player-kiun.png' }
+    CPU: { 'Ye': 'images/cpu-ye.png', 'Ch’e': 'images/cpu-che.png', 'Nge': 'images/cpu-nge.png', 'Kiún': 'images/cpu-kiun.png', 'Fre': 'images/cpu-fre.png' },
+    Player: { 'Ye': 'images/player-ye.png', 'Ch’e': 'images/player-che.png', 'Nge': 'images/player-nge.png', 'Kiún': 'images/player-kiun.png', 'Fre': 'images/player-fre.png' }
 };
 const soundFiles = {
     Ye: 'audio/ye-sound.mp3',
     'Ch’e': 'audio/che-sound.mp3',
     Nge: 'audio/nge-sound.mp3',
-    Kiún: 'audio/kiun-sound.mp3'
+    Kiún: 'audio/kiun-sound.mp3',
+    Fre: 'audio/fre-sound.mp3'
 };
+
+// 123ルールの切り替え
+function toggle123Rule() {
+    is123RuleOn = !is123RuleOn;
+    document.getElementById('123-rule-toggle').innerText = is123RuleOn ? '123ルール: オン' : '123ルール: オフ';
+}
 
 // ルール表示の切り替え
 function toggleRules() {
@@ -27,7 +37,7 @@ function toggleRules() {
 // 初回ターンの時、CPUはKiúnを選ばない
 function getRandomChoice(exclude) {
     if (isFirstTurn) {
-        let choices = roles.filter(role => role !== exclude && role !== 'Kiún');
+        let choices = roles.filter(role => role !== exclude && role !== 'Kiún' && role !== 'Fre'); // 初回はKiúnとFreを除外
         return choices[Math.floor(Math.random() * choices.length)];
     } else {
         let choices = roles.filter(role => role !== exclude);
@@ -72,6 +82,17 @@ function playTurn(childChoice) {
         return;
     }
 
+    // 123ルールを適用
+    if (is123RuleOn) {
+        if (prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e' || 
+            prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') {
+            if (childChoice !== 'Fre') {
+                alert('このターンではFreを選べます。');
+                return;
+            }
+        }
+    }
+
     // 初手でKiúnを出せない制約
     if (turnCounter === 1 && childChoice === 'Kiún') {
         alert('初手でKiúnは出せません！');
@@ -100,7 +121,6 @@ function playTurn(childChoice) {
         resultMessage = 'Kiúnが一致しなかったため、親の負け！';
     } else if (parentChoice === childChoice && childChoice === 'Kiún') {
         resultMessage = 'Kiúnが一致したためゲームは続行されます。';
-        // ゲーム続行の場合、ターン交代せず次のターンへ
         turnCounter++;
         updateRoleImages();
         playSound(childChoice); // 役の音声を再生
@@ -111,7 +131,17 @@ function playTurn(childChoice) {
         resultMessage = '親と子が同じ役を出したため子の負け！';
     }
 
-    // 勝敗が決した場合
+    // Freの勝敗処理
+    if (childChoice === 'Fre' && parentChoice === 'Kiún') {
+        resultMessage = 'FreはKiúnに対して親の勝ち！';
+    } else if (parentChoice === 'Fre' && childChoice === 'Kiún') {
+        resultMessage = 'FreはKiúnに対して親の勝ち！';
+    } else if (childChoice === 'Fre' && parentChoice === 'Fre') {
+        resultMessage = 'Fre同士の勝負は親の勝ち！';
+    } else if (childChoice === 'Fre' && ['Ye', 'Ch’e', 'Nge'].includes(parentChoice)) {
+        resultMessage = 'Freと役が異なるため引き分け、ゲームは続行！';
+    }
+
     if (resultMessage) {
         updateRoleImages();
         playSound(childChoice); // 役の音声を再生
@@ -119,7 +149,7 @@ function playTurn(childChoice) {
         return;
     }
 
-    // 勝負が決まらない場合、ターン交代
+    // 勝敗が決まらない場合、ターン交代
     turnCounter++;
     isParentTurn = !isParentTurn; // 親と子を交代
     isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
@@ -139,3 +169,5 @@ function toggleSound() {
 
 // ルールボタンの追加
 document.getElementById('rule-button').addEventListener('click', toggleRules);
+document.getElementById('123-rule-toggle').addEventListener('click', toggle123Rule);
+
