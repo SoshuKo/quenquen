@@ -64,9 +64,9 @@ function updateNextOptions() {
 
     // 123ルール適用
     if (isFreAvailable) {
-        document.getElementById('fre-option').style.display = 'block';
+        document.getElementById('player-fre').style.display = 'block'; // Freボタン表示
     } else {
-        document.getElementById('fre-option').style.display = 'none';
+        document.getElementById('player-fre').style.display = 'none'; // Freボタン非表示
     }
 }
 
