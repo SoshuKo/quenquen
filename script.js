@@ -1,10 +1,13 @@
-let lastParentChoice = null;  // CPUの前回の役
-let lastChildChoice = null;   // プレイヤーの前回の役
-let isParentTurn = true;      // 現在のターンが親のターンかどうか
-let turnCounter = 1;          // 現在のターン数
-let isFirstTurn = true;       // 初回ターンの判定
-let prevPlayerChoices = [];   // プレイヤーの過去の選択履歴
-let prevCPUChoices = [];      // CPUの過去の選択履歴
+let lastParentChoice = null; // CPUの前回の役
+let lastChildChoice = null;  // プレイヤーの前回の役
+let isParentTurn = true;     // 現在のターンが親のターンかどうか
+let turnCounter = 1;         // 現在のターン数
+let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
+let isFirstTurn = true;      // 初回ターンの判定
+let prevPlayerChoices = [];  // プレイヤーの過去の選択履歴
+let prevCPUChoices = [];     // CPUの過去の選択履歴
+let canPlayerChooseFre = false; // プレイヤーがFreを選べるか
+let canCPUChooseFre = false;    // CPUがFreを選べるか
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún', 'Fre']; // 'Fre'を役に追加
 const roleImages = {
@@ -19,9 +22,23 @@ const soundFiles = {
     Fre: 'audio/fre-sound.mp3'
 };
 
-// 初回ターンの時、CPUはKiúnを選ばない
+// プレイヤーがYe→Ch’eまたはCh’e→Ngeの順番で連続したターンを出した次のターンでFreボタンが有効
+function checkFreAvailabilityForPlayer() {
+    if (prevPlayerChoices.length < 2) return false; // 直前のターンが不足している場合、Freは選べない
+    return (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') ||
+           (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge');
+}
+
+// CPUがYe→Ch’eまたはCh’e→Ngeの順番で連続したターンを出した次のターンでFreが選べないようにする
+function checkFreAvailabilityForCPU() {
+    if (prevCPUChoices.length < 2) return false; // 直前のターンが不足している場合、Freは選べない
+    return (prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') ||
+           (prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge');
+}
+
+// 適切なランダムな役を選ぶ（Freは現在選べる場合のみ選択肢に含める）
 function getRandomChoice(exclude) {
-    let choices = roles.filter(role => role !== exclude && (role !== 'Kiún' || !isFirstTurn) && (role !== 'Fre' || !shouldEnableFreForCPU()));
+    let choices = roles.filter(role => role !== exclude && (role !== 'Fre' || (canCPUChooseFre && !checkFreAvailabilityForCPU())));
     return choices[Math.floor(Math.random() * choices.length)];
 }
 
@@ -38,8 +55,8 @@ function updateRoleImages() {
 }
 
 function updateNextOptions() {
-    let cpuOptions = roles.filter(role => role !== lastParentChoice && (role !== 'Fre' || !shouldEnableFreForCPU())).join(', ');
-    let playerOptions = roles.filter(role => role !== lastChildChoice && (role !== 'Fre' || !shouldEnableFreForPlayer())).join(', ');
+    let cpuOptions = roles.filter(role => role !== lastParentChoice && (role !== 'Fre' || canCPUChooseFre)).join(', ');
+    let playerOptions = roles.filter(role => role !== lastChildChoice && (role !== 'Fre' || canPlayerChooseFre)).join(', ');
 
     document.getElementById('cpu-options').innerText = cpuOptions;
     document.getElementById('player-options').innerText = playerOptions;
@@ -56,18 +73,36 @@ function endGame(message) {
     document.getElementById('choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
 }
 
-// プレイヤーがYe→Ch’eまたはCh’e→Ngeの順番で出した場合のみ、次ターンでFreボタンが有効
-function shouldEnableFreForPlayer() {
-    if (prevPlayerChoices.length < 2) return false;
-    return (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') ||
-           (prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ch’e' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Nge');
+// プレイヤーがFreを選ぶ前に、連続した役が必要かどうか
+function canPlayerChooseFreNow(childChoice) {
+    if (childChoice === 'Fre') {
+        if (checkFreAvailabilityForPlayer()) {
+            canPlayerChooseFre = true;
+            return true;
+        } else {
+            canPlayerChooseFre = false;
+            alert('このターンではFreは選べません！');
+            return false;
+        }
+    }
+    canPlayerChooseFre = false; // 他の選択肢の場合はFreを選べない
+    return true;
 }
 
-// CPUがYe→Ch’eまたはCh’e→Ngeの順番で出した場合、次ターンでのみFreが選択肢に入る
-function shouldEnableFreForCPU() {
-    if (prevCPUChoices.length < 2) return false;
-    return (prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') ||
-           (prevCPUChoices[prevCPUChoices.length - 2] === 'Ch’e' && prevCPUChoices[prevCPUChoices.length - 1] === 'Nge');
+// CPUがFreを選ぶ前に、連続した役が必要かどうか
+function canCPUChooseFreNow(parentChoice) {
+    if (parentChoice === 'Fre') {
+        if (checkFreAvailabilityForCPU()) {
+            canCPUChooseFre = true;
+            return true;
+        } else {
+            canCPUChooseFre = false;
+            alert('CPUはこのターンではFreを選べません！');
+            return false;
+        }
+    }
+    canCPUChooseFre = false; // 他の選択肢の場合はFreを選べない
+    return true;
 }
 
 function playTurn(childChoice) {
@@ -76,15 +111,13 @@ function playTurn(childChoice) {
         return;
     }
 
-    // プレイヤーがFreを選べるかどうかのチェック
-    if (childChoice === 'Fre' && !shouldEnableFreForPlayer()) {
-        alert('Freはこのターンでは選べません！');
+    // プレイヤーがFreを選べる場合
+    if (childChoice === 'Fre' && !canPlayerChooseFreNow(childChoice)) {
         return;
     }
 
-    // CPUがFreを選べるかどうかのチェック
-    if (isParentTurn && childChoice === 'Fre' && !shouldEnableFreForCPU()) {
-        alert('CPUはFreを選べません！');
+    // CPUがFreを選べる場合
+    if (isParentTurn && childChoice === 'Fre' && !canCPUChooseFreNow(lastParentChoice)) {
         return;
     }
 
@@ -165,5 +198,11 @@ function playTurn(childChoice) {
 function toggleSound() {
     isSoundOn = !isSoundOn;
     localStorage.setItem('isSoundOn', isSoundOn); // 音声設定をローカルストレージに保存
-    document.getElementById('sound-toggle').innerText = isSoundOn ? '音声オフ' : '音声オン';
 }
+
+// 選択ボタンを押すとこの関数が呼ばれます
+document.getElementById('ye-button').onclick = function() { playTurn('Ye'); };
+document.getElementById('che-button').onclick = function() { playTurn('Ch’e'); };
+document.getElementById('nge-button').onclick = function() { playTurn('Nge'); };
+document.getElementById('kiun-button').onclick = function() { playTurn('Kiún'); };
+document.getElementById('fre-button').onclick = function() { playTurn('Fre'); };
