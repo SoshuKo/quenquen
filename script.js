@@ -5,7 +5,8 @@ let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
-let isFreAvailable = false; // Freが選択できるかどうか
+let isFreAvailablePlayer = false; // プレイヤーの「Fre」表示フラグ
+let isFreAvailableCPU = false; // CPUの「Fre」表示フラグ
 let lastPlayerChoices = [];  // プレイヤーの連続した選択を記録
 let lastCpuChoices = [];     // CPUの連続した選択を記録
 
@@ -62,11 +63,16 @@ function updateNextOptions() {
     document.getElementById('cpu-options').innerText = cpuOptions;
     document.getElementById('player-options').innerText = playerOptions;
 
-    // 123ルール適用
-    if (isFreAvailable) {
+    // プレイヤー側のFre表示
+    if (isFreAvailablePlayer) {
         document.getElementById('player-fre').style.display = 'block'; // Freボタン表示
     } else {
         document.getElementById('player-fre').style.display = 'none'; // Freボタン非表示
+    }
+
+    // CPU側のFre表示
+    if (isFreAvailableCPU) {
+        document.getElementById('cpu-role-img').src = roleImages.CPU.Fre; // CPU側Freを表示
     }
 }
 
@@ -112,12 +118,12 @@ function playTurn(childChoice) {
     if (isParentTurn) {
         lastCpuChoices.push(lastParentChoice);
         if (check123RuleForFre(lastCpuChoices)) {
-            isFreAvailable = true;
+            isFreAvailableCPU = true; // CPU側Fre表示
         }
     } else {
         lastPlayerChoices.push(lastChildChoice);
         if (check123RuleForFre(lastPlayerChoices)) {
-            isFreAvailable = true;
+            isFreAvailablePlayer = true; // プレイヤー側Fre表示
         }
     }
 
