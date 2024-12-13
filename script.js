@@ -5,26 +5,17 @@ let turnCounter = 1;         // 現在のターン数
 let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
 let isFirstTurn = true;      // 初回ターンの判定
 let isRulesVisible = false;  // ルール表示のオン/オフフラグ
-let isFreAvailablePlayer = false; // プレイヤーの「Fre」表示フラグ
-let isFreAvailableCPU = false; // CPUの「Fre」表示フラグ
-let lastPlayerChoices = [];  // プレイヤーの連続した選択を記録
-let lastCpuChoices = [];     // CPUの連続した選択を記録
 
-const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún', 'Fre']; // Freを追加
+const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún'];
 const roleImages = {
-    CPU: { 
-        'Ye': 'images/cpu-ye.png', 'Ch’e': 'images/cpu-che.png', 'Nge': 'images/cpu-nge.png', 'Kiún': 'images/cpu-kiun.png', 'Fre': 'images/cpu-fre.png' 
-    },
-    Player: { 
-        'Ye': 'images/player-ye.png', 'Ch’e': 'images/player-che.png', 'Nge': 'images/player-nge.png', 'Kiún': 'images/player-kiun.png', 'Fre': 'images/player-fre.png' 
-    }
+    CPU: { 'Ye': 'images/cpu-ye.png', 'Ch’e': 'images/cpu-che.png', 'Nge': 'images/cpu-nge.png', 'Kiún': 'images/cpu-kiun.png' },
+    Player: { 'Ye': 'images/player-ye.png', 'Ch’e': 'images/player-che.png', 'Nge': 'images/player-nge.png', 'Kiún': 'images/player-kiun.png' }
 };
 const soundFiles = {
     Ye: 'audio/ye-sound.mp3',
     'Ch’e': 'audio/che-sound.mp3',
     Nge: 'audio/nge-sound.mp3',
-    Kiún: 'audio/kiun-sound.mp3',
-    Fre: 'audio/fre-sound.mp3' // Freの音声ファイル
+    Kiún: 'audio/kiun-sound.mp3'
 };
 
 // ルール表示の切り替え
@@ -57,25 +48,11 @@ function updateRoleImages() {
 }
 
 function updateNextOptions() {
-    let cpuOptions = roles.filter(role => role !== lastParentChoice && role !== 'Fre').join(', ');
-    let playerOptions = roles.filter(role => role !== lastChildChoice && role !== 'Fre').join(', ');
+    let cpuOptions = roles.filter(role => role !== lastParentChoice).join(', ');
+    let playerOptions = roles.filter(role => role !== lastChildChoice).join(', ');
 
     document.getElementById('cpu-options').innerText = cpuOptions;
     document.getElementById('player-options').innerText = playerOptions;
-
-    // プレイヤー側のFre表示
-    if (isFreAvailablePlayer) {
-        document.getElementById('player-fre').style.display = 'block'; // Freボタン表示
-    } else {
-        document.getElementById('player-fre').style.display = 'none'; // Freボタン非表示
-    }
-
-    // CPU側のFre表示
-    if (isFreAvailableCPU) {
-        document.getElementById('cpu-fre').style.display = 'block'; // CPU側Freボタン表示
-    } else {
-        document.getElementById('cpu-fre').style.display = 'none'; // CPU側Freボタン非表示
-    }
 }
 
 function updateTurnInfo() {
@@ -85,18 +62,8 @@ function updateTurnInfo() {
 }
 
 function endGame(message) {
-    document.getElementById('center-info').innerHTML += `<p>${message}</p>`;
+    document.getElementById('center-info').innerHTML += <p>${message}</p>;
     document.getElementById('choices').innerHTML = '<button onclick="location.reload()">もう一度遊ぶ</button>';
-}
-
-function check123RuleForFre(roleSequence) {
-    if (roleSequence.length >= 2) {
-        let lastTwoRoles = roleSequence.slice(-2);
-        if (lastTwoRoles.join('→') === 'Ye→Ch’e' || lastTwoRoles.join('→') === 'Ch’e→Nge') {
-            return true;
-        }
-    }
-    return false;
 }
 
 function playTurn(childChoice) {
@@ -114,19 +81,6 @@ function playTurn(childChoice) {
     if (childChoice === lastChildChoice) {
         alert('同じ役を続けて出すことはできません！');
         return;
-    }
-
-    // 123ルールの適用
-    if (isParentTurn) {
-        lastCpuChoices.push(lastParentChoice);
-        if (check123RuleForFre(lastCpuChoices)) {
-            isFreAvailableCPU = true; // CPU側Fre表示
-        }
-    } else {
-        lastPlayerChoices.push(lastChildChoice);
-        if (check123RuleForFre(lastPlayerChoices)) {
-            isFreAvailablePlayer = true; // プレイヤー側Fre表示
-        }
     }
 
     let parentChoice = getRandomChoice(lastParentChoice);
@@ -155,14 +109,6 @@ function playTurn(childChoice) {
         return;
     } else if (parentChoice === childChoice) {
         resultMessage = '親と子が同じ役を出したため子の負け！';
-    } else if (childChoice === 'Fre' && parentChoice !== 'Fre') {
-        resultMessage = 'FreとKiún、その他の役との勝負は親の勝ちです。';
-    } else if (parentChoice === 'Fre' && childChoice !== 'Fre') {
-        resultMessage = 'FreとKiún、その他の役との勝負は親の勝ちです。';
-    } else if (parentChoice === 'Fre' && childChoice === 'Fre') {
-        resultMessage = 'Fre同士の勝負は親の勝ちです。';
-    } else if (parentChoice === 'Fre' && (childChoice === 'Ye' || childChoice === 'Ch’e' || childChoice === 'Nge')) {
-        resultMessage = 'FreとYe, Ch’e, Ngeとの勝負は引き分けです。';
     }
 
     // 勝敗が決した場合
