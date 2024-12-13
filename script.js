@@ -84,8 +84,8 @@ function playTurn(childChoice) {
 
     // 123ルールを適用
     if (is123RuleOn) {
-        if (prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e' || 
-            prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e') {
+        if ((prevPlayerChoices.length >= 2 && prevPlayerChoices[prevPlayerChoices.length - 2] === 'Ye' && prevPlayerChoices[prevPlayerChoices.length - 1] === 'Ch’e') || 
+            (prevCPUChoices.length >= 2 && prevCPUChoices[prevCPUChoices.length - 2] === 'Ye' && prevCPUChoices[prevCPUChoices.length - 1] === 'Ch’e')) {
             if (childChoice !== 'Fre') {
                 alert('このターンではFreを選べます。');
                 return;
@@ -140,6 +140,12 @@ function playTurn(childChoice) {
         resultMessage = 'Fre同士の勝負は親の勝ち！';
     } else if (childChoice === 'Fre' && ['Ye', 'Ch’e', 'Nge'].includes(parentChoice)) {
         resultMessage = 'Freと役が異なるため引き分け、ゲームは続行！';
+        turnCounter++;
+        updateRoleImages();
+        playSound(childChoice); // 役の音声を再生
+        updateNextOptions();
+        updateTurnInfo();
+        return;
     }
 
     if (resultMessage) {
@@ -170,4 +176,3 @@ function toggleSound() {
 // ルールボタンの追加
 document.getElementById('rule-button').addEventListener('click', toggleRules);
 document.getElementById('123-rule-toggle').addEventListener('click', toggle123Rule);
-
