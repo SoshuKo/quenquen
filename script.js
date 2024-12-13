@@ -72,7 +72,9 @@ function updateNextOptions() {
 
     // CPU側のFre表示
     if (isFreAvailableCPU) {
-        document.getElementById('cpu-role-img').src = roleImages.CPU.Fre; // CPU側Freを表示
+        document.getElementById('cpu-fre').style.display = 'block'; // CPU側Freボタン表示
+    } else {
+        document.getElementById('cpu-fre').style.display = 'none'; // CPU側Freボタン非表示
     }
 }
 
