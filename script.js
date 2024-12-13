@@ -1,11 +1,10 @@
-let lastParentChoice = null; // CPUの前回の役
-let lastChildChoice = null;  // プレイヤーの前回の役
-let isParentTurn = true;     // 現在のターンが親のターンかどうか
-let turnCounter = 1;         // 現在のターン数
-let isSoundOn = localStorage.getItem('isSoundOn') === 'true'; // ローカルストレージから音声設定を読み込む
-let isFirstTurn = true;      // 初回ターンの判定
-let prevPlayerChoices = [];  // プレイヤーの過去の選択履歴
-let prevCPUChoices = [];     // CPUの過去の選択履歴
+let lastParentChoice = null;  // CPUの前回の役
+let lastChildChoice = null;   // プレイヤーの前回の役
+let isParentTurn = true;      // 現在のターンが親のターンかどうか
+let turnCounter = 1;          // 現在のターン数
+let isFirstTurn = true;       // 初回ターンの判定
+let prevPlayerChoices = [];   // プレイヤーの過去の選択履歴
+let prevCPUChoices = [];      // CPUの過去の選択履歴
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún', 'Fre']; // 'Fre'を役に追加
 const roleImages = {
@@ -22,7 +21,7 @@ const soundFiles = {
 
 // 初回ターンの時、CPUはKiúnを選ばない
 function getRandomChoice(exclude) {
-    let choices = roles.filter(role => role !== exclude && (role !== 'Kiún' || !isFirstTurn) && (role !== 'Fre' || !isFreAvailable()));
+    let choices = roles.filter(role => role !== exclude && (role !== 'Kiún' || !isFirstTurn) && (role !== 'Fre' || !shouldEnableFreForCPU()));
     return choices[Math.floor(Math.random() * choices.length)];
 }
 
