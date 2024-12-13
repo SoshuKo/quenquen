@@ -8,7 +8,6 @@ let isRulesVisible = false;  // ルール表示のオン/オフフラグ
 let isFreAvailable = false; // Freが選択できるかどうか
 let lastPlayerChoices = [];  // プレイヤーの連続した選択を記録
 let lastCpuChoices = [];     // CPUの連続した選択を記録
-let cpuFreAvailable = false; // CPUのFre選択可能フラグ
 
 const roles = ['Ye', 'Ch’e', 'Nge', 'Kiún', 'Fre']; // Freを追加
 const roleImages = {
@@ -35,14 +34,13 @@ function toggleRules() {
 
 // 初回ターンの時、CPUはKiúnを選ばない
 function getRandomChoice(exclude) {
-    let choices = roles.filter(role => role !== exclude);
     if (isFirstTurn) {
-        choices = choices.filter(role => role !== 'Kiún');
+        let choices = roles.filter(role => role !== exclude && role !== 'Kiún');
+        return choices[Math.floor(Math.random() * choices.length)];
+    } else {
+        let choices = roles.filter(role => role !== exclude);
+        return choices[Math.floor(Math.random() * choices.length)];
     }
-    if (!cpuFreAvailable) {
-        choices = choices.filter(role => role !== 'Fre');
-    }
-    return choices[Math.floor(Math.random() * choices.length)];
 }
 
 function playSound(role) {
@@ -114,7 +112,7 @@ function playTurn(childChoice) {
     if (isParentTurn) {
         lastCpuChoices.push(lastParentChoice);
         if (check123RuleForFre(lastCpuChoices)) {
-            cpuFreAvailable = true;
+            isFreAvailable = true;
         }
     } else {
         lastPlayerChoices.push(lastChildChoice);
@@ -171,7 +169,6 @@ function playTurn(childChoice) {
     turnCounter++;
     isParentTurn = !isParentTurn; // 親と子を交代
     isFirstTurn = false; // 初回ターンが終わったのでフラグを更新
-    cpuFreAvailable = false; // CPUのFre選択可能フラグをリセット
 
     // UIの更新
     updateRoleImages();
